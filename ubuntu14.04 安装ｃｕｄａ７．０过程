@@ -1,0 +1,76 @@
+
+＝＝＝＝＝以下步骤是在ｕｂｕｎｔｕ１４．０４安装ｃｕｄａ７．０的前期准备工作＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+a) 检查自己的GPU型号　以及是否CUDA-capable
+在终端中输入　lspci | grep -i nvidia 
+会显示自己的NVIDIA GPU版本信息
+去CUDA的官网查看自己的GPU版本是否在CUDA的支持列表中
+
+b) 检查自己的Linux版本是否支持 CUDA(Ubuntu 14.04没问题)
+
+c) 检查自己的系统中是否装了gcc
+
+在终端中输入： gcc --version 可以查看自己的gcc版本信息(此处注意是两个横线)
+或者也可以用指令dpkg -l | grep gcc | awk '{print $2}'查看是否有ｇｃｃ库文件　效果也是类似的
+如发现　ｇｃｃ没有安装　用以下步骤进行安装
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apt-get install gcc-4.9 g++-4.9
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+
+如果想要同时安装ａｌｔｅｒｎａｔｉｖｅ的ｇｃｃ４．８版本　按照以下指令（可以不安装这个　已经安装ｇｃｃ４．９了）
+sudo apt-get install gcc-4.8 g++-4.8
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
+
+检查安装是否成功　以及默认调用的ｇｃｃ版本
+sudo update-alternatives --config gcc
+
+d) 检查是否安装了kernel header和 package development
+
+在终端中输入： uname -a　查看自己的kernel版本信息
+
+安装对应kernel版本的kernel header
+在终端中输入：$ sudo apt-get install linux-headers-$(uname -r)
+可以安装对应kernel版本的kernel header和package development
+参考文献：https://askubuntu.com/questions/183515/how-do-i-find-the-kernel-version-ubuntu-release-and-disk-partition-information
+
+
+安装package development
+sudo apt-get install linux-headers-generic
+
+参考文献　https://askubuntu.com/questions/75709/how-do-i-install-kernel-header-files
+
+然后将其ｕｐｄａｔｅ
+sudo apt-get update
+sudo apt-get install linux-generic
+
+
+＝＝＝＝＝＝＝＝＝＝＝＝准备工作完毕正式开始安装ＣＵＤＡ７．０＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+CUDA提供两种安装方式：package manager安装和runfile安装
+我本来选的是 package manager 安装，这种方法相对简单，但尝试了几次都失败。后来是转换到runfile安装才成功的。因此此处只介绍runfile安装方式。
+
+下载cuda安装包：cuda官网下载，根据系统信息选择对应的版本，runfile安装的话最后一项要选择 runfile文件
+
+官网下载地址　https://developer.nvidia.com/cuda-downloads
+
+
+环境变量,Path配置：
+
+$sudo gedit /etc/profile或~/.bashrc
+打开文件后　将线下面两行粘在末尾（注意不要随手打出莫名的空格或字符，会报错）
+
+export PATH=$PATH:/usr/local/cuda-7.0/bin  
+export LD_LIBRARY_PATH=/usr/local/cuda-7.0/lib64:/lib  
+
+
+使之生效：
+source /etc/profile（对应profile）或sudo ldconfig（对应bashrc）
+
+
+
+参考文章
+
+http://blog.csdn.net/masa_fish/article/details/51882183
+
+ｇｃｃ安装进程　参考
+https://askubuntu.com/questions/466651/how-do-i-use-the-latest-gcc-on-ubuntu
