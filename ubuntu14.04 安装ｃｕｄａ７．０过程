@@ -46,13 +46,65 @@ sudo apt-get install linux-generic
 
 ＝＝＝＝＝＝＝＝＝＝＝＝准备工作完毕正式开始安装ＣＵＤＡ７．０＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
-CUDA提供两种安装方式：package manager安装和runfile安装
-我本来选的是 package manager 安装，这种方法相对简单，但尝试了几次都失败。后来是转换到runfile安装才成功的。因此此处只介绍runfile安装方式。
+CUDA提供两种安装方式：在线安装和下载后ｌｏｃａｌ安装
+建议下载后ｌｏｃａｌ安装
 
 下载cuda安装包：cuda官网下载，根据系统信息选择对应的版本，runfile安装的话最后一项要选择 runfile文件
 
 官网下载地址　https://developer.nvidia.com/cuda-downloads
 
+sudo sh cuda_7.5.18_linux.run
+
+／／＝＝＝＝＝＝＝＝＝＝注意　以下内容参考http://blog.csdn.net/masa_fish/article/details/51882183　未经二次验证
+4、runfile安装cuda
+
+a) 禁用 nouveau
+
+终端中运行：$ lsmod | grep nouveau，如果有输出则代表nouveau正在加载。
+
+Ubuntu的nouveau禁用方法：
+在/etc/modprobe.d中创建文件blacklist-nouveau.conf，在文件中输入一下内容
+
+blacklist nouveau
+options nouveau modeset=0
+
+    1
+    2
+
+打开终端，运行
+
+$ sudo update-initramfs –u
+
+    1
+
+设置完毕可以再次运行 $ lsmod | grep nouveau 检查是否禁用成功，如果运行后没有任何输出，则代表禁用成功。
+
+b) 重启电脑，到达登录界面时，alt+ctrl+f1，进入text mode，登录账户
+
+c) 输入 $ sudo service lightdm stop 关闭图形化界面
+
+d) 切换到cuda安装文件的路径，运行$ sudo sh cuda_7.5.18_linux.run
+
+按照提示一步步操作
+
+遇到提示是否安装openGL ，选择no（如果你的电脑跟我一样是双显，且主显是非NVIDIA的GPU需要选择no，否则可以yes）
+其他都选择yes或者默认
+安装成功后，会显示installed，否则会显示failed。
+
+e) 输入 $ sudo service lightdm start 重新启动图形化界面。
+
+Alt + ctrl +F7，返回到图形化登录界面，输入密码登录。
+如果能够成功登录，则表示不会遇到循环登录的问题，基本说明CUDA的安装成功了。
+
+f) 重启电脑。检查Device Node Verification。
+
+检查路径/dev下 有无存在名为nvidia*（以nvidia开头）的多个文件(device files)
+如果没有的话，可以参考官方文档里的指导步骤，进行添加。
+
+
+／／＝＝＝＝＝＝＝＝＝＝＝注意　以上安装步骤　未经验证
+
+g) 设置环境变量的设置
 
 环境变量,Path配置：
 
@@ -68,7 +120,43 @@ source /etc/profile（对应profile）或sudo ldconfig（对应bashrc）
 
 
 
-参考文章
+
+如果安装过程出现报错　可以参考http://www.jianshu.com/p/35c7fde85968
+
+
+5、 安装完毕后的检查工作。
+
+a) 检查 NVIDIA Driver是否安装成功
+
+终端输入 cat /proc/driver/nvidia/version 会输出NVIDIA Driver的版本号
+
+b) 检查 CUDA Toolkit是否安装成功
+
+终端输入 nvcc --version 会输出CUDA的版本信息
+
+c) 尝试编译cuda提供的例子
+
+切换到例子存放的路径，默认路径是 ~/NVIDIA_CUDA-7.0_Samples
+（即 /home/xxx/ NVIDIA_CUDA-7.0_Samples， xxx是你自己的用户名 比如/home/xd/cudasamples7/NVIDIA_CUDA-7.0_Samples）
+
+进入这个文件夹后输入　make
+
+如果出现错误的话，则会立即报错停止，否则会开始进入编译阶段。
+如果出现了报错，看看是不是系统中没有gcc
+然后在终端运行 $ sudo apt-get install gcc 安装完gcc后 再make就正常了
+整个编译的时间持续比较长，耐心等待，大概十几分钟是需要的。
+
+d) 运行编译生成的二进制文件。
+
+编译后的二进制文件 默认存放在~/NVIDIA_CUDA-7.０_Samples/bin中。
+切换路径 cd ~/NVIDIA_CUDA-7.０_Samples/bin/x86_64/linux/release
+终端输入 ./deviceQuery
+
+如果没有报错，则代表CUDA安装且配置成功（congratulation！！）
+
+也可以再运行./次目录下的其他文件名　会有一些有趣的图像或窗口出现
+
+以上步骤参考自文章
 
 http://blog.csdn.net/masa_fish/article/details/51882183
 
