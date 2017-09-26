@@ -156,6 +156,12 @@ d) 运行编译生成的二进制文件。
 
 也可以再运行./次目录下的其他文件名　会有一些有趣的图像或窗口出现
 
+如果遇见报错　可尝试如下指令
+sudo find . -type f -execdir sed -i ‘s/UBUNTU_PKG_NAME = “nvidia-367”/UBUNTU_PKG_NAME = “nvidia-375”/g’ ‘{}’ \; 
+或者
+sudo find . -type f -execdir sed -i 's/UBUNTU_PKG_NAME = "nvidia-367"/UBUNTU_PK
+目的是将系统里需要用到vidia-367的地方全部换成nvidia-375
+
 以上步骤参考自文章
 
 http://blog.csdn.net/masa_fish/article/details/51882183
